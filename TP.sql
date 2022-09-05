@@ -34,6 +34,14 @@ create table hora(
     hor_horas_dia int not null
 );
 
+/* create table liquidacion_horas(
+CURRENT_TIMESTAMP
+);
+
+create table rendicion_horas(
+CURRENT_TIMESTAMP
+);
+*/
 ALTER TABLE `tpbdd2`.`hora` 
 ADD CONSTRAINT `emp_legajo`
   FOREIGN KEY (`emp_legajo`)
@@ -71,6 +79,9 @@ ADD CONSTRAINT `id_proy`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
+
+
+
 DELIMITER $$
 
 CREATE PROCEDURE spCrearEmpleado (IN nombre VARCHAR (255), IN legajo INT, IN edad INT)
@@ -92,18 +103,39 @@ CALL spCrearEmpleado ('Camila Matozza' , 006, 23);
 CALL spCrearEmpleado ('Rogelio Rolon' , 008, 34);
 CALL spCrearEmpleado ('Ariel Gonzalez' , 010, 24);
 
+
+
 DELIMITER $$
-
-CREATE PROCEDURE spCrear_Pro (in pro_id_proyecto int, in pro_nombre varchar(255), in pro_descripcion varchar(255) )
+CREATE PROCEDURE spCrear_Proyecto2(in pro_id_proyecto int, in pro_nombre varchar(255), in pro_descripcion varchar(255) )
 BEGIN
-
 	Insert into proyecto ( pro_id_proyecto, pro_nombre, pro_descripcion )
-			VALUES (pro_id_proyecto ,pro_nombre , pro_descripcion) ;
-
+			VALUES (pro_id_proyecto, pro_nombre , pro_descripcion) ;
+	
 END;
 $$
 
-CALL spCrear_Pro ( 1 , 'Nuevo cliente' , 'saracafiumba')
+CALL spCrear_Proyecto2 ( 1 , 'DOVE1' , 'saracafiumba1');
+CALL spCrear_Proyecto2 ( 2 , 'DOVE2' , 'saracafiumba2');
+CALL spCrear_Proyecto2 ( 3 , 'DOVE3' , 'saracafiumba3');
+CALL spCrear_Proyecto2 ( 4 , 'DOVE4' , 'saracafiumba4');
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `cargar_horas_semana`(in emp_id int, in pro_id int, in rol_id int, in cli_id int, in horas int)
+BEGIN
+
+
+    set @cont = 0;
+    set @target = 6;
+
+    while @cont <= @target do
+
+            insert into hora(emp_legajo, pro_id_proyecto, rol_id_rol, cli_id_cliente, hor_fecha, hor_horas_dia)
+            values (emp_id, pro_id, rol_id, cli_id, DATE_ADD(SYSDATE(), INTERVAL -@cont DAY), horas);
+
+            set @cont = @cont + 1;
+
+    end while;
+END; $$
 
 
 
