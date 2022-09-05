@@ -43,5 +43,4 @@ call CargaHoraria (6, 8);
 call CargaHoraria (5, 8);
 call CargaHoraria (7, 8);
 call CargaHoraria (8, 8);
-call CargaHoraria (9, 8);
-call CargaHoraria (10, 8);
+
