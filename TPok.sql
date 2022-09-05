@@ -54,6 +54,7 @@ values (3, 'Tester', 3);
 insert into rol
 values (4, 'Administrador', 4);
 
+drop table hora
 
 
 

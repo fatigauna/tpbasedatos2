@@ -38,3 +38,4 @@ END;
 $$
 
 call LiqMensualCliente (1,8)
+call LiqMensualCliente (2,8)
