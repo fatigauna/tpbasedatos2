@@ -26,61 +26,14 @@ create table cliente(
 );
 
 create table hora(
-	emp_legajo int not null primary key,
+	id_Hora int not null primary key auto_increment,
+	emp_legajo int not null,
     pro_id_proyecto int not null,
     rol_id_rol int not null,
     cli_id_cliente int not null,
     hor_fecha date not null,
     hor_horas_dia int not null
 );
-
-/* create table liquidacion_horas(
-CURRENT_TIMESTAMP
-);
-
-create table rendicion_horas(
-CURRENT_TIMESTAMP
-);
-*/
-ALTER TABLE `tpbdd2`.`hora` 
-ADD CONSTRAINT `emp_legajo`
-  FOREIGN KEY (`emp_legajo`)
-  REFERENCES `tpbdd2`.`empleado` (`emp_legajo`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
-  
-  ALTER TABLE `tpbdd2`.`hora` 
-ADD INDEX `id_cliente_idx` (`cli_id_cliente` ASC) VISIBLE;
-;
-ALTER TABLE `tpbdd2`.`hora` 
-ADD CONSTRAINT `id_cliente`
-  FOREIGN KEY (`cli_id_cliente`)
-  REFERENCES `tpbdd2`.`cliente` (`cli_id_cliente`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
-
-ALTER TABLE `tpbdd2`.`hora` 
-ADD INDEX `id_rol_idx` (`rol_id_rol` ASC) VISIBLE;
-;
-ALTER TABLE `tpbdd2`.`hora` 
-ADD CONSTRAINT `id_rol`
-  FOREIGN KEY (`rol_id_rol`)
-  REFERENCES `tpbdd2`.`rol` (`rol_id_rol`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
-
-ALTER TABLE `tpbdd2`.`hora` 
-ADD INDEX `id_proy_idx` (`pro_id_proyecto` ASC) VISIBLE;
-;
-ALTER TABLE `tpbdd2`.`hora` 
-ADD CONSTRAINT `id_proy`
-  FOREIGN KEY (`pro_id_proyecto`)
-  REFERENCES `tpbdd2`.`proyecto` (`pro_id_proyecto`)
-  ON DELETE NO ACTION
-  ON UPDATE NO ACTION;
-
-
-
 
 DELIMITER $$
 
@@ -103,8 +56,6 @@ CALL spCrearEmpleado ('Camila Matozza' , 006, 23);
 CALL spCrearEmpleado ('Rogelio Rolon' , 008, 34);
 CALL spCrearEmpleado ('Ariel Gonzalez' , 010, 24);
 
-
-
 DELIMITER $$
 CREATE PROCEDURE spCrear_Proyecto2(in pro_id_proyecto int, in pro_nombre varchar(255), in pro_descripcion varchar(255) )
 BEGIN
@@ -114,10 +65,7 @@ BEGIN
 END;
 $$
 
-CALL spCrear_Proyecto2 ( 1 , 'DOVE1' , 'saracafiumba1');
-CALL spCrear_Proyecto2 ( 2 , 'DOVE2' , 'saracafiumba2');
-CALL spCrear_Proyecto2 ( 3 , 'DOVE3' , 'saracafiumba3');
-CALL spCrear_Proyecto2 ( 4 , 'DOVE4' , 'saracafiumba4');
+CALL spCrear_Proyecto2 ( 4 , 'h' , 'h')
 
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `cargar_horas_semana`(in emp_id int, in pro_id int, in rol_id int, in cli_id int, in horas int)
@@ -137,6 +85,85 @@ BEGIN
     end while;
 END; $$
 
+ 
+ USE tpbdd2;
+CALL cargar_horas_semana (4,4,9,1,10);
+CALL cargar_horas_semana (1,4,1,1,10);
+CALL cargar_horas_semana (2,4,2,1,10);
+CALL cargar_horas_semana (3,4,3,1,10);
+CALL cargar_horas_semana (5,4,4,1,10);
+CALL cargar_horas_semana (6,4,5,1,10);
+CALL cargar_horas_semana (7,4,9,1,100);
+CALL cargar_horas_semana (8,4,6,1,1);
+
+insert into rol
+values (1, 'Project Manager', 10);
+
+insert into rol
+values (2, 'Desarrollador', 9);
+
+insert into rol
+values (3, 'Tester', 8);
+
+insert into rol
+values (4, 'Administrador', 7);
+
+insert into rol
+values (5, 'DevOps', 6);
 
 
+insert into rol
+values (9, 'DevOps', 1);
 
+insert into rol
+values (6, 'DevOps', 1);
+
+DELIMITER $$
+
+CREATE PROCEDURE RendicionHoras(IN carlos INT, IN juan INT)
+
+BEGIN
+
+-- //Se declara variable donde se va a guardar el valor total
+DECLARE TOTAL INT;
+
+-- //Se declara el cursor con el select con cuyos datos se va a iterar
+DECLARE RendicionHoras CURSOR FOR
+
+select sum(h.hor_horas_dia * r.rol_paga_hora)
+from rol r
+inner join hora h 
+on r.rol_id_rol = h.rol_id_rol
+where h.cli_id_cliente = carlos and month(h.hor_fecha) = juan;
+
+
+-- //Declaración de un manejador de error tipo NOT FOUND
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET @hecho = TRUE;
+
+-- //Se abre el cursor. Al abrir el cursor este sitúa un puntero a la primera fila del resultado de la consulta.
+OPEN RendicionHoras;
+
+-- //Empieza el bucle de lectura
+loop1: LOOP
+-- //Se guarda el resultado en la variable, hay una variable y un campo en el SELECT de la declaración del cursor
+
+ FETCH RendicionHoras INTO TOTAL;
+
+-- //Se sale del bucle cuando no hay elementos por recorrer
+ IF @hecho THEN
+ LEAVE loop1;
+ END IF;
+
+
+END LOOP loop1;
+
+-- //Se cierra el cursor
+CLOSE RendicionHoras;
+
+-- //Se muestra el resultado
+SELECT TOTAL;
+
+END;
+$$
+
+call RendicionHoras (1,9)
