@@ -166,4 +166,4 @@ SELECT TOTAL;
 END;
 $$
 
-call RendicionHoras (1,9)
+call RendicionHoras (1,8)
